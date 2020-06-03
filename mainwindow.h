@@ -20,6 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    void RenderField();
 
 private slots:
     void on_newgame_item_triggered();
