@@ -12,9 +12,11 @@ class Custom : public QDialog
     Q_OBJECT
 
 public:
-    explicit Custom(QWidget *parent = nullptr);
+    explicit Custom(int w, int h, QWidget *parent = nullptr);
     ~Custom();
+    void SetWidth(int value);
     int GetWidth();
+    void SetHeight(int value);
     int GetHeight();
 
 private slots:
@@ -25,7 +27,7 @@ private slots:
 
 private:
     Ui::Custom *ui;
-    int w, h;
+    int width, height;
 };
 
 #endif // CUSTOM_H

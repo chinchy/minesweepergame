@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <QPushButton>
+
 Game::Game(){
     this->width = 9;
     this->height = 9;

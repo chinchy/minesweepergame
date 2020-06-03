@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>604</width>
-    <height>502</height>
+    <height>494</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -52,7 +52,6 @@
    <addaction name="menu"/>
    <addaction name="aboutMenu"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="newgame_item">
    <property name="text">
     <string>Новая игра</string>
