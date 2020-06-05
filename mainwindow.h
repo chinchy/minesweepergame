@@ -21,9 +21,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QVector<QVector<int>> map;
+
+    void WinGame();
+    void LoseGame();
     void RenderField();
     void OpenCells(QPushButton* btn, int h, int w);
-    QVector<QVector<int>> map;
 
 private slots:
     void on_cell_clicked();

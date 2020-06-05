@@ -21,10 +21,18 @@ MainWindow::MainWindow(QWidget *parent)
     this->RenderField();
 }
 
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+
+void MainWindow::WinGame(){
+    QMessageBox *msg = new QMessageBox(QMessageBox::NoIcon, "Победа!", "Поздравляем! Вы выиграли!!!", QMessageBox::Apply);
+    msg->exec();
+}
+
 
 void MainWindow::RenderField(){
     game->NewGame();
@@ -63,10 +71,14 @@ void MainWindow::RenderField(){
 
 
 void MainWindow::OpenCells(QPushButton* btn, int h, int w){
-    btn->setEnabled(false);
-    btn->setChecked(false);
-    btn->setCheckable(false);
-    btn->setIcon(QIcon());
+    if (btn->isEnabled() and map.at(h).at(w) == 0){
+        btn->setEnabled(false);
+        btn->setChecked(false);
+        btn->setCheckable(false);
+        btn->setIcon(QIcon());
+        if (game->CellCounterInc() == 1)
+            WinGame();
+    }
 
     for (int i=-1; i<2; i++){
         for (int j=-1; j<2; j++){
@@ -77,11 +89,16 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
                         OpenCells(tmp_btn, h+i, w+j);
                 }
                 else{
-                    tmp_btn->setText(QString("%1").arg(map.at(h+i).at(w+j)));
-                    tmp_btn->setEnabled(false);
-                    tmp_btn->setChecked(false);
-                    tmp_btn->setCheckable(false);
-                    tmp_btn->setIcon(QIcon());
+                    if (tmp_btn->isEnabled()){
+                        tmp_btn->setText(QString("%1").arg(map.at(h+i).at(w+j)));
+                        tmp_btn->setEnabled(false);
+                        tmp_btn->setChecked(false);
+                        tmp_btn->setCheckable(false);
+                        tmp_btn->setIcon(QIcon());
+
+                        if (game->CellCounterInc() == 1)
+                            WinGame();
+                    }
                 }
             }
         }
@@ -91,11 +108,6 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
 
 void MainWindow::on_cell_clicked(){
     QRightClickButton* btn = qobject_cast<QRightClickButton*>(sender());
-
-    btn->setEnabled(false);
-    btn->setChecked(false);
-    btn->setCheckable(false);
-    btn->setIcon(QIcon());
 
     int h = btn->objectName().split("_")[0].toInt();
     int w = btn->objectName().split("_")[1].toInt();
@@ -109,6 +121,12 @@ void MainWindow::on_cell_clicked(){
     }
     else{
         btn->setText(QString("%1").arg(map.at(h).at(w)));
+        btn->setEnabled(false);
+        btn->setChecked(false);
+        btn->setCheckable(false);
+        btn->setIcon(QIcon());
+        if (game->CellCounterInc() == 1)
+            WinGame();
     }
 }
 
@@ -116,13 +134,23 @@ void MainWindow::on_cell_clicked(){
 void MainWindow::on_cell_add_flag(){
     QRightClickButton* btn = qobject_cast<QRightClickButton*>(sender());
 
+    int h = btn->objectName().split("_")[0].toInt();
+    int w = btn->objectName().split("_")[1].toInt();
+
     if (btn->isChecked()){
         btn->setChecked(false);
         connect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
+
+        if (map.at(h).at(w) == -1)
+            game->MineCounterDec();
     }
     else{
         btn->setChecked(true);
         disconnect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
+
+        if (map.at(h).at(w) == -1)
+            if (game->MineCounterInc() == 1)
+                WinGame();
     }
 }
 

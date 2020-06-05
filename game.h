@@ -14,11 +14,20 @@ public:
     void SetHeight(int value);
     int GetHeight();
     QVector<QVector<int>> GetMap();
+
+    int MineCounterInc();
+    void MineCounterDec();
+    int CellCounterInc();
+
     void NewGame();
 
 private:
     QVector<QVector<int>> map;
     int width, height;
+    int mine_counter = 0;
+    int cell_counter = 0;
+    int mine_count = 0;
+
 };
 
 #endif // GAME_H
