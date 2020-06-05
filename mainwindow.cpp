@@ -30,16 +30,17 @@ void MainWindow::RenderField(){
 
     QWidget *widget = new QWidget();
     QGridLayout *layout = new QGridLayout;
-    QPushButton *tmp_btn;
+    QPushButton *btn;
 
     setCentralWidget(widget);
 
     for (int h = 1; h <= game->GetHeight(); h++){
         for (int w = 1; w <= game->GetWidth(); w++) {
-            tmp_btn = new QPushButton(QString("btn_%1_%2").arg(h).arg(w), widget);
-            tmp_btn->setText(QString("%1%2").arg(h).arg(w));
-            tmp_btn->setGeometry(QRect(QPoint(h*20, (w-1)*20), QSize(20, 20)));
-            layout->addWidget(tmp_btn, h, w);
+            btn = new QPushButton(QString("btn_%1_%2").arg(h).arg(w), widget);
+            btn->setText("");
+            btn->setGeometry(QRect(QPoint(h*20, (w-1)*20), QSize(20, 20)));
+            connect(btn, SIGNAL (clicked()), this, SLOT (on_cell_clicked()));
+            layout->addWidget(btn, h, w);
         }
     }
     layout->setSpacing(0);
@@ -48,9 +49,17 @@ void MainWindow::RenderField(){
 }
 
 
+void MainWindow::on_cell_clicked(){
+    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    btn->setIcon(QIcon(":/icon/src/mine.ico"));
+    btn->setIconSize(QSize(10, 10));
+}
+
+
 void MainWindow::on_newgame_item_triggered()
 {
-    this->RenderField();
+    //this->RenderField();
+    game->NewGame();
 }
 
 void MainWindow::on_easy_item_triggered()

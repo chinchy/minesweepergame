@@ -23,6 +23,7 @@ private:
     void RenderField();
 
 private slots:
+    void on_cell_clicked();
     void on_newgame_item_triggered();
     void on_easy_item_triggered();
     void on_medium_item_triggered();
