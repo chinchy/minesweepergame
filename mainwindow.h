@@ -4,6 +4,7 @@
 #include "game.h"
 
 #include <QMainWindow>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,8 @@ public:
 private:
     Ui::MainWindow *ui;
     void RenderField();
+    void OpenCells(QPushButton* btn, int h, int w);
+    QVector<QVector<int>> map;
 
 private slots:
     void on_cell_clicked();

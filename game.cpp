@@ -30,15 +30,20 @@ void Game::SetHeight(int value){
     this->height = value;
 }
 
+QVector<QVector<int>> Game::GetMap(){
+    return this->map;
+}
+
 void Game::NewGame(){
     QVector<QVector<int>> tmp_map(height, QVector<int>(width, -2));
     QVector<QVector<int>> tmp_mines(height, QVector<int>(width, 0));
 
     QRandomGenerator generator;
+    std::uniform_int_distribution<int> distribution(1, 100);
 
     for (int h = 0; h < height; h++){
         for (int w = 0; w < width; w++) {
-            bool isMine = generator.bounded(100) < 15;
+            bool isMine = distribution(*QRandomGenerator::global()) < 15;
 
             if (isMine){
                 tmp_map[h][w] = -1;
@@ -54,21 +59,20 @@ void Game::NewGame(){
                     }
                 }
             }
-            else{
-                tmp_map[h][w] = tmp_mines[h][w];
-            }
         }
     }
-    map = tmp_map;
-    mines = tmp_mines;
 
+    for (int h = 0; h < height; h++){
+        for (int w = 0; w < width; w++) {
+            if (tmp_map.at(h).at(w) != -1)
+                tmp_map[h][w] = tmp_mines.at(h).at(w);
+        }
+    }
+
+    map = tmp_map;
 
     qDebug("===Map===");
     for (QVector<QVector<int>>::iterator xIter = map.begin(); xIter != map.end(); xIter++){
-        qDebug() << (*xIter);
-    }
-    qDebug("===Mines===");
-    for (QVector<QVector<int>>::iterator xIter = mines.begin(); xIter != mines.end(); xIter++){
         qDebug() << (*xIter);
     }
 }

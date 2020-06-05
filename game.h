@@ -13,12 +13,11 @@ public:
     int GetWidth();
     void SetHeight(int value);
     int GetHeight();
-    QVector<QVector<bool>> GetMap();
+    QVector<QVector<int>> GetMap();
     void NewGame();
 
 private:
     QVector<QVector<int>> map;
-    QVector<QVector<int>> mines;
     int width, height;
 };
 
