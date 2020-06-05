@@ -19,12 +19,14 @@ SOURCES += \
     custom.cpp \
     game.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    qrightclickbutton.cpp
 
 HEADERS += \
     custom.h \
     game.h \
-    mainwindow.h
+    mainwindow.h \
+    qrightclickbutton.h
 
 FORMS += \
     custom.ui \

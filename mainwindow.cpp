@@ -3,6 +3,7 @@
 #include "custom.h"
 
 #include "game.h"
+#include "qrightclickbutton.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -33,16 +34,25 @@ void MainWindow::RenderField(){
 
     QWidget *widget = new QWidget();
     QGridLayout *layout = new QGridLayout;
-    QPushButton *btn;
+    QRightClickButton *btn;
 
     setCentralWidget(widget);
 
     for (int h = 1; h <= game->GetHeight(); h++){
         for (int w = 1; w <= game->GetWidth(); w++) {
-            btn = new QPushButton("", widget);
+            btn = new QRightClickButton("", widget);
+
+            QIcon icon = QIcon();
+            icon.addPixmap(QPixmap(":/icon/src/empty.png"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/icon/src/flag.png"), QIcon::Normal, QIcon::On);
+            btn->setIcon(icon);
+            btn->setIconSize(QSize(10, 10));
+            btn->setCheckable(true);
+
             btn->setObjectName(QString("%1_%2").arg(h-1).arg(w-1));
             btn->setGeometry(QRect(QPoint(h*20, (w-1)*20), QSize(20, 20)));
-            connect(btn, SIGNAL (clicked()), this, SLOT (on_cell_clicked()));
+            connect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
+            connect(btn, SIGNAL (rightClicked()), this, SLOT (on_cell_add_flag()));
             layout->addWidget(btn, h, w);
         }
     }
@@ -54,59 +64,38 @@ void MainWindow::RenderField(){
 
 void MainWindow::OpenCells(QPushButton* btn, int h, int w){
     btn->setEnabled(false);
+    btn->setChecked(false);
+    btn->setCheckable(false);
+    btn->setIcon(QIcon());
 
-    if (h+1 < game->GetHeight() && h+1 >= 0){
-        QPushButton* tmp_btn = this->findChild<QPushButton *>(QString("%1_%2").arg(h+1).arg(w));
-        if (map.at(h+1).at(w) == 0){
-            if (tmp_btn->isEnabled())
-                OpenCells(tmp_btn, h+1, w);
-        }
-        else{
-            tmp_btn->setText(QString("%1").arg(map.at(h+1).at(w)));
-            tmp_btn->setEnabled(false);
-        }
-    }
-
-    if (h-1 < game->GetHeight() && h-1 >= 0){
-        QPushButton* tmp_btn = this->findChild<QPushButton *>(QString("%1_%2").arg(h-1).arg(w));
-        if (map.at(h-1).at(w) == 0){
-            if (tmp_btn->isEnabled())
-                OpenCells(tmp_btn, h-1, w);
-        }
-        else{
-            tmp_btn->setText(QString("%1").arg(map.at(h-1).at(w)));
-            tmp_btn->setEnabled(false);
-        }
-    }
-
-    if (w+1 < game->GetWidth() && w+1 >= 0){
-        QPushButton* tmp_btn = this->findChild<QPushButton *>(QString("%1_%2").arg(h).arg(w+1));
-        if (map.at(h).at(w+1) == 0){
-            if (tmp_btn->isEnabled())
-                OpenCells(tmp_btn, h, w+1);
-        }
-        else{
-            tmp_btn->setText(QString("%1").arg(map.at(h).at(w+1)));
-            tmp_btn->setEnabled(false);
-        }
-    }
-
-    if (w-1 < game->GetWidth() && w-1 >= 0){
-        QPushButton* tmp_btn = this->findChild<QPushButton *>(QString("%1_%2").arg(h).arg(w-1));
-        if (map.at(h).at(w-1) == 0){
-            if (tmp_btn->isEnabled())
-                OpenCells(tmp_btn, h, w-1);
-        }
-        else{
-            tmp_btn->setText(QString("%1").arg(map.at(h).at(w-1)));
-            tmp_btn->setEnabled(false);
+    for (int i=-1; i<2; i++){
+        for (int j=-1; j<2; j++){
+            if ((h+i < game->GetHeight() && h+i >= 0) && (w+j < game->GetWidth() && w+j >= 0)){
+                QRightClickButton* tmp_btn = this->findChild<QRightClickButton *>(QString("%1_%2").arg(h+i).arg(w+j));
+                if (map.at(h+i).at(w+j) == 0){
+                    if (tmp_btn->isEnabled())
+                        OpenCells(tmp_btn, h+i, w+j);
+                }
+                else{
+                    tmp_btn->setText(QString("%1").arg(map.at(h+i).at(w+j)));
+                    tmp_btn->setEnabled(false);
+                    tmp_btn->setChecked(false);
+                    tmp_btn->setCheckable(false);
+                    tmp_btn->setIcon(QIcon());
+                }
+            }
         }
     }
 }
 
 
 void MainWindow::on_cell_clicked(){
-    QPushButton* btn = qobject_cast<QPushButton*>(sender());
+    QRightClickButton* btn = qobject_cast<QRightClickButton*>(sender());
+
+    btn->setEnabled(false);
+    btn->setChecked(false);
+    btn->setCheckable(false);
+    btn->setIcon(QIcon());
 
     int h = btn->objectName().split("_")[0].toInt();
     int w = btn->objectName().split("_")[1].toInt();
@@ -120,6 +109,20 @@ void MainWindow::on_cell_clicked(){
     }
     else{
         btn->setText(QString("%1").arg(map.at(h).at(w)));
+    }
+}
+
+
+void MainWindow::on_cell_add_flag(){
+    QRightClickButton* btn = qobject_cast<QRightClickButton*>(sender());
+
+    if (btn->isChecked()){
+        btn->setChecked(false);
+        connect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
+    }
+    else{
+        btn->setChecked(true);
+        disconnect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
     }
 }
 

@@ -1,6 +1,5 @@
 #include "game.h"
 
-#include <QPushButton>
 #include <QRandomGenerator>
 #include <QDebug>
 
