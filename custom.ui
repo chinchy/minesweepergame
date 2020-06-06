@@ -22,6 +22,10 @@
   <property name="windowTitle">
    <string>Настройка поля</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/icon/src/mine.ico</normaloff>:/icon/src/mine.ico</iconset>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="1">
     <widget class="QLabel" name="label_2">
@@ -144,6 +148,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

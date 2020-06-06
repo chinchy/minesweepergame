@@ -34,6 +34,23 @@ void MainWindow::WinGame(){
 }
 
 
+void MainWindow::LoseGame(){
+    for (int h = 0; h < game->GetHeight(); h++){
+        for (int w = 0; w < game->GetWidth(); w++) {
+            QRightClickButton* btn = this->findChild<QRightClickButton *>(QString("%1_%2").arg(h).arg(w));
+            btn->setEnabled(false);
+            if (map.at(h).at(w) == -1){
+                btn->setIcon(QIcon(":/icon/src/mine.ico"));
+                btn->setIconSize(QSize(10, 10));
+            }
+            else{
+                btn->setIcon(QIcon());
+            }
+        }
+    }
+}
+
+
 void MainWindow::RenderField(){
     game->NewGame();
     map = game->GetMap();
@@ -56,7 +73,15 @@ void MainWindow::RenderField(){
             btn->setIcon(icon);
             btn->setIconSize(QSize(10, 10));
             btn->setCheckable(true);
-
+            btn->setStyleSheet("width: 20px;"
+                               "height: 20px;"
+                               "background-color: rgb(192, 192, 192);"
+                               "border-width: 2px;"
+                               "border-style: outset;"
+                               "border-top-color: rgb(255, 255, 255);"
+                               "border-left-color: rgb(255, 255, 255);"
+                               "border-bottom-color: rgb(128, 128, 128);"
+                               "border-right-color: rgb(128, 128, 128);");
             btn->setObjectName(QString("%1_%2").arg(h-1).arg(w-1));
             btn->setGeometry(QRect(QPoint(h*20, (w-1)*20), QSize(20, 20)));
             connect(btn, SIGNAL (leftClicked()), this, SLOT (on_cell_clicked()));
@@ -76,6 +101,9 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
         btn->setChecked(false);
         btn->setCheckable(false);
         btn->setIcon(QIcon());
+        btn->setStyleSheet("background-color: rgb(192, 192, 192);"
+                           "border-width: 1px;"
+                           "border-color: rgb(128, 128, 128);");
         if (game->CellCounterInc() == 1)
             WinGame();
     }
@@ -90,11 +118,32 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
                 }
                 else{
                     if (tmp_btn->isEnabled()){
+                        QString color;
+
+                        switch(map.at(h+i).at(w+j)) {
+                          case 1:
+                            color = "color: blue;";
+                            break;
+                          case 2:
+                            color = "color: green;";
+                            break;
+                          case 3:
+                            color = "color: red;";
+                            break;
+                          default:
+                            color = "color: yellow;";
+                        }
+
                         tmp_btn->setText(QString("%1").arg(map.at(h+i).at(w+j)));
                         tmp_btn->setEnabled(false);
                         tmp_btn->setChecked(false);
                         tmp_btn->setCheckable(false);
                         tmp_btn->setIcon(QIcon());
+                        tmp_btn->setStyleSheet(color +
+                                               "font-weight: bold;"
+                                               "background-color: rgb(192, 192, 192);"
+                                               "border-width: 1px;"
+                                               "border-color: rgb(128, 128, 128);");
 
                         if (game->CellCounterInc() == 1)
                             WinGame();
@@ -115,16 +164,39 @@ void MainWindow::on_cell_clicked(){
     if (map.at(h).at(w) == -1){
         btn->setIcon(QIcon(":/icon/src/mine.ico"));
         btn->setIconSize(QSize(10, 10));
+        btn->setStyleSheet("background-color: red");
+        LoseGame();
     }
     else if (map.at(h).at(w) == 0){
         OpenCells(btn, h, w);
     }
     else{
+        QString color;
+        switch(map.at(h).at(w)) {
+          case 1:
+            color = "color: blue;";
+            break;
+          case 2:
+            color = "color: green;";
+            break;
+          case 3:
+            color = "color: red;";
+            break;
+          default:
+            color = "color: yellow;";
+        }
+
         btn->setText(QString("%1").arg(map.at(h).at(w)));
         btn->setEnabled(false);
         btn->setChecked(false);
         btn->setCheckable(false);
         btn->setIcon(QIcon());
+        btn->setStyleSheet(color +
+                               "font-weight: bold;"
+                               "background-color: rgb(192, 192, 192);"
+                               "border-width: 1px;"
+                               "border-color: rgb(128, 128, 128);");
+
         if (game->CellCounterInc() == 1)
             WinGame();
     }
