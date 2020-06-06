@@ -5,6 +5,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <QTimer>
+#include <QTime>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,13 +24,18 @@ public:
 private:
     Ui::MainWindow *ui;
     QVector<QVector<int>> map;
+    QTimer *timer;
+    bool isTimer = false;
+    int time = 0;
 
     void WinGame();
     void LoseGame();
     void RenderField();
     void OpenCells(QPushButton* btn, int h, int w);
+    void update();
 
 private slots:
+    void updateTime();
     void on_cell_clicked();
     void on_cell_add_flag();
     void on_newgame_item_triggered();
@@ -37,5 +44,7 @@ private slots:
     void on_hard_item_triggered();
     void on_custom_item_triggered();
     void on_exit_item_triggered();
+    void on_rules_item_triggered();
+    void on_about_item_triggered();
 };
 #endif // MAINWINDOW_H

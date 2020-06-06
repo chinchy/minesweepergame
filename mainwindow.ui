@@ -23,21 +23,7 @@
    <iconset resource="resource.qrc">
     <normaloff>:/icon/src/mine.ico</normaloff>:/icon/src/mine.ico</iconset>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>310</x>
-      <y>210</y>
-      <width>80</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="fileMenu">
    <property name="geometry">
     <rect>
@@ -70,6 +56,7 @@
    <addaction name="menu"/>
    <addaction name="aboutMenu"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="newgame_item">
    <property name="text">
     <string>Новая игра</string>

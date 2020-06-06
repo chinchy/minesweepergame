@@ -13,6 +13,7 @@ public:
     int GetWidth();
     void SetHeight(int value);
     int GetHeight();
+    int GetMineCount();
     QVector<QVector<int>> GetMap();
 
     int MineCounterInc();

@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags( Qt::WindowTitleHint | Qt::WindowCloseButtonHint );
 
     this->RenderField();
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
 }
 
 
@@ -29,12 +33,39 @@ MainWindow::~MainWindow()
 
 
 void MainWindow::WinGame(){
-    QMessageBox *msg = new QMessageBox(QMessageBox::NoIcon, "Победа!", "Поздравляем! Вы выиграли!!!", QMessageBox::Apply);
+    if (isTimer){
+        timer->stop();
+        isTimer = false;
+    }
+    QString sec = "";
+    switch(time % 10) {
+      case 1:
+        sec = "секунда";
+        break;
+      case 2:
+        sec = "секунды";
+        break;
+      case 3:
+        sec = "секунды";
+        break;
+      case 4:
+        sec = "секунды";
+        break;
+      default:
+        sec = "секунд";
+    }
+    QMessageBox *msg = new QMessageBox(QMessageBox::NoIcon, "Победа!", QString("Поздравляем!!! Вы справились %1 %2!").arg(time).arg(sec), QMessageBox::Apply);
+    msg->setWindowIcon(QIcon(":/icon/src/mine.ico"));
     msg->exec();
 }
 
 
 void MainWindow::LoseGame(){
+    if (isTimer){
+        timer->stop();
+        isTimer = false;
+    }
+
     for (int h = 0; h < game->GetHeight(); h++){
         for (int w = 0; w < game->GetWidth(); w++) {
             QRightClickButton* btn = this->findChild<QRightClickButton *>(QString("%1_%2").arg(h).arg(w));
@@ -92,6 +123,13 @@ void MainWindow::RenderField(){
     layout->setSpacing(0);
     layout->setContentsMargins(0,0,0,0);
     widget->setLayout(layout);
+
+    time = 0;
+    if (isTimer){
+        timer->stop();
+        isTimer = false;
+    }
+    ui->statusBar->showMessage(QString("Всего мин: %1  Время: %2").arg(game->GetMineCount()).arg(time));
 }
 
 
@@ -101,9 +139,9 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
         btn->setChecked(false);
         btn->setCheckable(false);
         btn->setIcon(QIcon());
-        btn->setStyleSheet("background-color: rgb(192, 192, 192);"
+        btn->setStyleSheet("background-color: rgb(150, 150, 150);"
                            "border-width: 1px;"
-                           "border-color: rgb(128, 128, 128);");
+                           "border-color: rgb(50, 50, 50);");
         if (game->CellCounterInc() == 1)
             WinGame();
     }
@@ -141,9 +179,9 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
                         tmp_btn->setIcon(QIcon());
                         tmp_btn->setStyleSheet(color +
                                                "font-weight: bold;"
-                                               "background-color: rgb(192, 192, 192);"
+                                               "background-color: rgb(150, 150, 150);"
                                                "border-width: 1px;"
-                                               "border-color: rgb(128, 128, 128);");
+                                               "border-color: rgb(50, 50, 50);");
 
                         if (game->CellCounterInc() == 1)
                             WinGame();
@@ -155,7 +193,19 @@ void MainWindow::OpenCells(QPushButton* btn, int h, int w){
 }
 
 
+void MainWindow::updateTime()
+{
+    time++;
+    ui->statusBar->showMessage(QString("Всего мин: %1  Время: %2").arg(game->GetMineCount()).arg(time));
+}
+
+
 void MainWindow::on_cell_clicked(){
+    if (!isTimer){
+        isTimer = true;
+        timer->start(1000);
+    }
+
     QRightClickButton* btn = qobject_cast<QRightClickButton*>(sender());
 
     int h = btn->objectName().split("_")[0].toInt();
@@ -193,9 +243,9 @@ void MainWindow::on_cell_clicked(){
         btn->setIcon(QIcon());
         btn->setStyleSheet(color +
                                "font-weight: bold;"
-                               "background-color: rgb(192, 192, 192);"
+                               "background-color: rgb(150, 150, 150);"
                                "border-width: 1px;"
-                               "border-color: rgb(128, 128, 128);");
+                               "border-color: rgb(50, 50, 50);");
 
         if (game->CellCounterInc() == 1)
             WinGame();
@@ -268,4 +318,29 @@ void MainWindow::on_custom_item_triggered()
 void MainWindow::on_exit_item_triggered()
 {
     MainWindow::close();
+}
+
+void MainWindow::on_rules_item_triggered()
+{
+    QMessageBox *msg = new QMessageBox(QMessageBox::NoIcon,
+                                       "Сапер: правила и общие сведения",
+                                       "• Число в ячейке показывает, сколько мин скрыто вокруг данной ячейки. Это число поможет понять вам, где находятся безопасные ячейки, а где находятся бомбы.\n"
+                                       "• Если рядом с открытой ячейкой есть пустая ячейка, то она откроется автоматически.\n"
+                                       "• Если вы открыли ячейку с миной, то игра проиграна.\n"
+                                       "• Что бы пометить ячейку, в которой находится бомба, нажмите её правой кнопкой мыши.\n"
+                                       "• Если в ячейке указано число, оно показывает, сколько мин скрыто в восьми ячейках вокруг данной. Это число помогает понять, где находятся безопасные ячейки.\n"
+                                       "• Игра продолжается до тех пор, пока вы не откроете все не заминированные ячейки.",
+                                       QMessageBox::Ok);
+    msg->setWindowIcon(QIcon(":/icon/src/mine.ico"));
+    msg->exec();
+}
+
+void MainWindow::on_about_item_triggered()
+{
+    QMessageBox *msg = new QMessageBox(QMessageBox::NoIcon,
+                                       "Об игре \"Сапёр\"",
+                                       "Игра \"Сапёр\"\n\nСоздана в рамках курсовой работы\nстудентом 2 курса СПбПУ Петровым Ильёй\n\n© 2020 Petrov Ilya. Все права защищены",
+                                       QMessageBox::Ok);
+    msg->setWindowIcon(QIcon(":/icon/src/mine.ico"));
+    msg->exec();
 }

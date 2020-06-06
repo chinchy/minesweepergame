@@ -36,6 +36,10 @@ void Game::SetHeight(int value){
     this->height = value;
 }
 
+int Game::GetMineCount(){
+    return this->mine_count;
+}
+
 QVector<QVector<int>> Game::GetMap(){
     return this->map;
 }
